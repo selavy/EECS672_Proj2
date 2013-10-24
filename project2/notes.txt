@@ -1,0 +1,36 @@
+;; This buffer is for notes you don't want to save, and for Lisp evaluation.
+;; If you want to create a file, visit that file with C-x C-f,
+;; then enter the text in that file's own buffer.
+
+------------------------------------
+vertex shader:
+in vec3 wcPosition
+in vec3 wcNormal
+
+out vec4 colorToFS
+-------------------------------------
+
+-------------------------------------
+fragment shader:
+in vec4 colorToFS
+out vec4 fragmentColor
+-------------------------------------
+
+-------------------------------------
+SimpleBox.h:
+GLuint vbo[2]; // [0] has coordinates; [1] has normals
+
+static ShaderIF* shaderIF;
+static int numInstances;
+static GLuint shaderProgram;
+static GLint pvaLoc_wcPosition;
+static GLint pvaLoc_wcNormal;
+/* static GLint ppuLoc_WCECMatrix; */
+/* static GLint ppuLoc_ECLDSMatrix; */
+void defineModel();
+static void fetchGLSLVariableLocations();
+
+---------------------------------------------------------------
+Notes:
+
++scaleTrans => float[4]
