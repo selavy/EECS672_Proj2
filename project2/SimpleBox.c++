@@ -62,30 +62,43 @@ void SimpleBox::defineModel()
   vec3* points = new vec3[NUMPOINTS];
   vec3* normals = new vec3[NUMPOINTS];
 
+  /*
   float _x = 0.0f;
   float _y = 0.0f;
   float _thickness = 0.3f;
   float _width = 0.5f;
+  */
 
   vec3 Vertices[VERTICES] = {
   /*
    * define the square
    */
-    /* front left */
+    /*
+    // front left
     { _x , 0, _y },
     { _x, -_thickness, _y },
 
-    /* front right */
+    // front right
     { _x + _width, 0, _y  },
     { _x + _width, -_thickness, _y },
 
-    /* back right */
+    // back right
     { _x + _width, 0, _y + _width },
     { _x + _width, -_thickness, _y + _width },
 
-    /* back left */
+    // back left
     { _x, 0, _y + _width },
     { _x, -_thickness, _y + _width }
+    */
+
+    { 0.0f, 0.5f, 0.0f },
+    { 0.0f, 0.0f, 0.0f },
+    { 0.5f, 0.5f, 0.0f },
+    { 0.5f, 0.0f, 0.0f },
+    { 1.0f, 1.0f, -1.0f },
+    { 0.5f, 0.5f, -1.0f },
+    { 0.0f, 1.0f, -1.0f },
+    { 0.0f, 0.5f, -1.0f }
   };
 
   /*
