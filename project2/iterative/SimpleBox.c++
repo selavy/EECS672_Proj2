@@ -13,6 +13,9 @@
 /* static */ GLuint     SimpleBox::shaderProgram = 0;
 /* static */ GLint      SimpleBox::pvaLoc_wcPosition = -1;
 /* static */ GLint      SimpleBox::pvaLoc_wcNormal = -1;
+/* static */ GLint      SimpleBox::ppuLoc_M4x4_ec_lds = -1;
+/* static */ GLint      SimpleBox::ppuLoc_M4x4_wc_ec = -1;
+/* static */ GLint      SimpleBox::ppuLoc_kd = -1;
 
 SimpleBox::SimpleBox()
 {
@@ -49,7 +52,7 @@ SimpleBox::~SimpleBox()
 void SimpleBox::defineModel()
 {
   /* 6 (faces) * 4 (vertices / face) = 24 vertices */
-  typedef float vec3[3];
+
 
   vec3* points = new vec3[24];
   vec3* normals = new vec3[24];
@@ -229,6 +232,8 @@ void SimpleBox::fetchGLSLVariableLocations()
     {
       SimpleBox::pvaLoc_wcPosition = pvAttribLocation( shaderProgram, "wcPosition" );
       SimpleBox::pvaLoc_wcNormal = pvAttribLocation( shaderProgram, "wcNormal" );
+      SimpleBox::ppuLoc_M4x4_ec_lds = ppUniformLocation( shaderProgram, "M4x4_ec_lds" );
+      SimpleBox::ppuLoc_M4x4_wc_ec = ppUniformLocation( shaderProgram, "M4x4_wc_ec" );
     }
 }
 
@@ -251,12 +256,18 @@ void SimpleBox::render()
   glGetIntegerv( GL_CURRENT_PROGRAM, &pgm );
   glUseProgram( shaderProgram );
 
-  /*
-  float scaleTrans[4];
-  computeScaleTrans( scaleTrans );
+  mat4 WCtoECMatrix;
+  getWCtoECMatrix( WCtoECMatrix );
 
-put into the WCECMatrix...
-  */
+  mat4 ECtoLDSMatrix;
+  getECtoLDSMatrix( ECtoLDSMatrix );
+
+  glUniformMatrix4fv( SimpleBox::ppuLoc_M4x4_wc_ec, 1, GL_TRUE, &WCtoECMatrix[0] );
+  glUniformMatrix4fv( SimpleBox::ppuLoc_M4x4_ec_lds, 1, GL_TRUE, &ECtoLDSMatrix[0] );
+
+  vec4 kd = { 1.0, 0.0, 0.0, 1.0 };
+
+  glUniform1fv( SimpleBox::ppuLoc_kd, 4, &kd[0] );
 
   glBindVertexArray( vao );
   
@@ -267,4 +278,24 @@ put into the WCECMatrix...
 
   /* restore the previous program */
   glUseProgram( pgm );
+}
+
+void SimpleBox::getWCtoECMatrix( float * mat ) {
+  mat4 aMatrix = { 1.0, 0.0, 0.0, 0.0,
+	      0.0, 1.0, 0.0, 0.0,
+	      0.0, 0.0, 1.0, 0.0,
+	      0.0, 0.0, 0.0, 1.0 };
+
+  for( short i = 0; i < 16; ++i )
+    mat[i] = aMatrix[i];
+}
+
+void SimpleBox::getECtoLDSMatrix( float * mat ) {
+  mat4 aMatrix = { 1.0, 0.0, 0.0, 0.0,
+		   0.0, 1.0, 0.0, 0.0,
+		   0.0, 0.0, -1.0, 0.0,
+		   0.0, 0.0, 0.0, 1.0 };
+
+  for( short i = 0; i < 16; ++i )
+    mat[i] = aMatrix[i];
 }

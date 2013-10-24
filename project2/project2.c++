@@ -4,7 +4,8 @@
 #include <GL/freeglut.h>
 
 #include "Controller.h"
-#include "Square.h"
+//#include "Square.h"
+#include "SimpleBox.h"
 
 int main(int argc, char* argv[])
 {
@@ -14,8 +15,7 @@ int main(int argc, char* argv[])
 	Controller c("GIVE ME A NICE TITLE", GLUT_DEPTH | GLUT_DOUBLE);
 
 	// create your scene, adding things to the Controller....
-	c.addModel( new Square(true, 0.0, 0.0, 0.2, 0.5) );
-	c.addModel( new Square( false, 0.5, 0.0, 0.2, 0.5 ) );
+	c.addModel( new SimpleBox );
 
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 

@@ -59,15 +59,9 @@ void main ()
 	mat3 normalMatrix = transpose( inverse( mat3x3(M4x4_wc_ec) ) );
 	vec3 ec_nHat = normalize(normalMatrix * wcNormal);
 
-
-	vec4 errortest = evaluateLightingModel(p_ecPosition.xyz, ec_nHat);
+	colorToFS = evaluateLightingModel(p_ecPosition.xyz, ec_nHat);
 
 	// apply the projection matrix to compute the projective space representation
 	// of the 3D logical device space coordinates of the input vertex:
-	
-	vec4 positiontest = M4x4_ec_lds * p_ecPosition;
-        
-        colorToFS = vec4( 1.0, 0.0, 0.0, 1.0 );
-
-	gl_Position = vec4( wcPosition, 1.0 );
+	gl_Position = M4x4_ec_lds * p_ecPosition;
 }

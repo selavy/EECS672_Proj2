@@ -1,3 +1,4 @@
+
 CPP = g++
 INC = -I../cryphutil -I../fontutil -I../glslutil -I../mvcutil
 C_FLAGS = -fPIC -g -c -DGL_GLEXT_PROTOTYPES $(INC)
@@ -6,7 +7,7 @@ LINK = g++ -fPIC -g
 LOCAL_UTIL_LIBRARIES = -L../lib -lcryph -lfont -lglsl -lmvc
 OGL_LIBRARIES = -lglut -lGLU -lGL
 
-OBJS = project2.o Square.o MatrixIF.o BoardMV.o
+OBJS = project2.o SimpleBox.o MatrixIF.o
 
 project2: $(OBJS) ../lib/libcryph.so ../lib/libfont.so ../lib/libglsl.so ../lib/libmvc.so
 	$(LINK) -o project2 $(OBJS) $(LOCAL_UTIL_LIBRARIES) $(OGL_LIBRARIES)
@@ -28,6 +29,9 @@ project2.o: project2.c++
 
 Square.o: MatrixIF.o Square.h Square.c++ BoardMV.o
 	$(CPP) $(C_FLAGS) Square.c++
+
+SimpleBox.o: SimpleBox.h SimpleBox.c++
+	$(CPP) $(C_FLAGS) SimpleBox.c++
 
 BoardMV.o: BoardMV.h BoardMV.c++
 	$(CPP) $(C_FLAGS) BoardMV.c++
