@@ -4,7 +4,6 @@
 #include <GL/freeglut.h>
 
 #include "Controller.h"
-//#include "Square.h"
 #include "SimpleBox.h"
 
 int main(int argc, char* argv[])
@@ -12,7 +11,7 @@ int main(int argc, char* argv[])
 	// One-time initialization of the glut
 	glutInit(&argc, argv);
 
-	Controller c("GIVE ME A NICE TITLE", GLUT_DEPTH | GLUT_DOUBLE);
+	Controller c("Checkers", GLUT_DEPTH | GLUT_DOUBLE);
 
 	// create your scene, adding things to the Controller....
 	c.addModel( new SimpleBox );
