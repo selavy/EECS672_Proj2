@@ -17,6 +17,8 @@ uniform mat4 M4x4_ec_lds = // (W-V map) * (projection matrix)
 uniform vec4 kd = // "kd" - diffuse reflectivity; basic object color
 	vec4(0.8, 0.0, 0.0, 1.0); // default: darkish red
 
+uniform vec3 lightModel = vec3( 0.0, 0.0, 1.0 );
+
 // Per-vertex attributes
 // 1. incoming vertex position in world coordinates
 layout (location = 0) in vec3 wcPosition;
@@ -33,7 +35,7 @@ vec4 evaluateLightingModel(in vec3 ec_P, in vec3 ec_nHat)
 	// will be a function of angle between the normal vector and
 	// the light source. Specifically:
 
-	float factor = abs(ec_nHat.z);
+	float factor = abs( dot( lightModel, ec_nHat ) );
 
 	return vec4(factor * kd.rgb, kd.a);
 }

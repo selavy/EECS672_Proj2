@@ -9,12 +9,14 @@ GLuint NewModelView::shaderProgram = 0;
 GLint NewModelView::ppuLoc_M4x4_wc_ec = -1;
 GLint NewModelView::ppuLoc_M4x4_ec_lds = -1;
 GLint NewModelView::ppuLoc_kd = -1;
+GLint NewModelView::ppuLoc_lightModel = -1;
 
-vec3 NewModelView::_eye = { 0.0f, -3.0f, 0.0f };
-vec3 NewModelView::_center = { -3.0f, 0.0f, -3.0f };
-vec3 NewModelView::_up = { 0.0f, 0.0f, -1.0f };
+vec3 NewModelView::_eye = { 0.0f, -1.0f, -1.0f };
+vec3 NewModelView::_center = { 0.0f, 0.0f, 0.0f };
+vec3 NewModelView::_up = { 0.0f, 1.0f, 0.0f };
 vec3 NewModelView::_eyemin = { -1.0f, -1.0f, -1.0f };
-vec3 NewModelView::_eyemax = { 1.0f, 0.5f, 9.0f };
+vec3 NewModelView::_eyemax = { 1.0f, 1.0f, 1.0f };
+vec3 NewModelView::_light = { 0.0f, 0.0f, 1.0f };
 
 NewModelView::NewModelView() {
   if( NewModelView::shaderProgram == 0 )
@@ -87,7 +89,10 @@ void NewModelView::sendMatrices()
 void NewModelView::sendKD()
 {
   if( NewModelView::ppuLoc_kd > -1 )
-    glUniform4fv( NewModelView::ppuLoc_kd, 1, _kd );
+    {
+      glUniform4fv( NewModelView::ppuLoc_kd, 1, _kd );
+      glUniform3fv( NewModelView::ppuLoc_lightModel, 1, _light );
+    }
 }
 
 void NewModelView::fetchGLSLMatrixLocations()
@@ -97,5 +102,6 @@ void NewModelView::fetchGLSLMatrixLocations()
       NewModelView::ppuLoc_M4x4_wc_ec = ppUniformLocation( shaderProgram, "M4x4_wc_ec" );
       NewModelView::ppuLoc_M4x4_ec_lds = ppUniformLocation( shaderProgram, "M4x4_ec_lds" );
       NewModelView::ppuLoc_kd = ppUniformLocation( shaderProgram, "kd" );
+      NewModelView::ppuLoc_lightModel = ppUniformLocation( shaderProgram, "lightModel" );
     }
 }

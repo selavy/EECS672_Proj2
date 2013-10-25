@@ -25,6 +25,7 @@ class NewModelView : public ModelView
   static GLint ppuLoc_M4x4_wc_ec;
   static GLint ppuLoc_M4x4_ec_lds;
   static GLint ppuLoc_kd;
+  static GLint ppuLoc_lightModel;
 
   static void fetchGLSLMatrixLocations();
 
@@ -33,6 +34,7 @@ class NewModelView : public ModelView
   static vec3 _up;
   static vec3 _eyemin;
   static vec3 _eyemax;
+  static vec3 _light;
 
   double limits[6];
 
