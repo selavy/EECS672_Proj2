@@ -4,7 +4,7 @@
 #include <GL/freeglut.h>
 
 #include "Controller.h"
-#include "Prism.h"
+#include "Square.h"
 #include "ShaderIF.h"
 
 #define RED true
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 	  {
 	    for( int j = 0; j < 8; ++j )
 	      {
-		c.addModel( new Prism( color, coords, width, thickness ) );
+		c.addModel( new Square( color, coords, width, thickness ) );
 		coords[0] += width;
 		color ^= FLIP;
 	      }
@@ -43,13 +43,13 @@ int main(int argc, char* argv[])
 	coords[0] = -7.9f;
 	coords[1] =  0.0f;
 	coords[2] = -7.9f;
-	c.addModel( new Prism( color, coords, 0.3, 5.0 ) );
+	c.addModel( new Square( color, coords, 0.3, 5.0 ) );
 
 	coords[0] = 7.9f;
 	coords[1] = 0.0f;
 	coords[2] = 7.9f;
 
-	c.addModel( new Prism( color, coords, 0.3, 5.0 ) );
+	c.addModel( new Square( color, coords, 0.3, 5.0 ) );
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
 	// Off to the glut event handling loop:
