@@ -6,7 +6,7 @@ LINK = g++ -fPIC -g
 LOCAL_UTIL_LIBRARIES = -L../lib -lcryph -lfont -lglsl -lmvc
 OGL_LIBRARIES = -lglut -lGLU -lGL
 
-OBJS = project2.o Square.o MatrixIF.o
+OBJS = project2.o Square.o MatrixIF.o NewModelView.o
 
 all: project2
 	./project2
@@ -37,6 +37,9 @@ MatrixIF.o: MatrixIF.h MatrixIF.c++
 
 Square.o: MatrixIF.o Square.h Square.c++
 	$(CPP) $(C_FLAGS) Square.c++
+
+NewModelView.o: NewModelView.h NewModelView.c++
+	$(CPP) $(C_FLAGS) NewModelView.c++
 
 clean:
 	rm -rf *.o *~ project2

@@ -10,46 +10,15 @@
 
 #define NumVertices 36
 
-ShaderIF* Square::shaderIF = NULL;
-int Square::numInstances = 0;
-GLuint Square::shaderProgram = 0;
-
-GLint Square::ppuLoc_M4x4_wc_ec = -1;
-GLint Square::ppuLoc_M4x4_ec_lds = -1;
-GLint Square::ppuLoc_kd = -1;
 GLint Square::pvaLoc_wcPosition = -1;
 GLint Square::pvaLoc_wcNormal = -1;
-
-vec3 Square::_eye = { 0.0f, -3.0f, 0.0f /* -20.0f, -5.0f, -40.0f */ }; // in WC
-vec3 Square::_center = { -3.0f, 0.0f, -3.0f }; // in WC
-vec3 Square::_up = { 0.0f, 0.0f, -1.0f };
-vec3 Square::_eyemin = { -1.0f, -1.0f, -1.0f /* 0.0f, 3.0f, 20.0f */ }; // in EC
-vec3 Square::_eyemax = { 1.0f, 0.5f, 9.0f /* 40.0f, 6.0f, 40.0f */ }; // in EC
-
 
 Square::Square( bool color, vec3 corner, float width, float thickness )
   :
   Index( 0 )
 {
-  if( Square::shaderProgram == 0 )
-    {
-      Square::shaderIF = new ShaderIF( "simple3d.vsh", "simple3d.fsh" );
-      Square::shaderProgram = shaderIF->getShaderPgmID();
-      
-      fetchGLSLVariableLocations();
-    }
-  /*
- vec3 tmpvertices[8] = {
-   { -0.5f, -0.5f, 0.5f  },
-   { -0.5f, 0.5f, 0.5f },
-   { 0.5f, 0.5f, 0.5f },
-   { 0.5f, -0.5f, 0.5f },
-   { -0.5f, -0.5f, -0.5f },
-    { -0.5f, 0.5f, -0.5f },
-    { 0.5f, 0.5f, -0.5f },
-    { 0.5f, -0.5f, -0.5f }
- };
-  */
+  if( Square::pvaLoc_wcPosition == -1 )
+    fetchGLSLVariableLocations();
 
   vec3 tmpvertices[8] = {
     { corner[0], corner[1], corner[2] },
@@ -121,21 +90,10 @@ void Square::fetchGLSLVariableLocations()
 {
   if( Square::shaderProgram > 0 )
     {
-      // TODO
-      // get other GLSL vars
-      Square::ppuLoc_M4x4_wc_ec = ppUniformLocation( shaderProgram, "M4x4_wc_ec" );
-      Square::ppuLoc_M4x4_ec_lds = ppUniformLocation( shaderProgram, "M4x4_ec_lds" );
-      Square::ppuLoc_kd = ppUniformLocation( shaderProgram, "kd" );
       Square::pvaLoc_wcPosition = pvAttribLocation( shaderProgram, "wcPosition" );
       Square::pvaLoc_wcNormal = pvAttribLocation( shaderProgram, "wcNormal" );
       
     }
-}
-
-// xyzLimits: {wcXmin, wcXmax, wcYmin, wcYmax, wcZmin, wcZmax}
-void Square::getWCBoundingBox(double* xyzLimits) const
-{
-  memcpy( xyzLimits, limits, 6 * sizeof( double ) );
 }
 
 void Square::render()
@@ -145,17 +103,12 @@ void Square::render()
   
   glUseProgram( shaderProgram );
 
-  getMatrices();
-
-  // send the transformation matrices and the kd value to the GPU
-  glUniformMatrix4fv( Square::ppuLoc_M4x4_wc_ec, 1, GL_TRUE, _model_view );
-  glUniformMatrix4fv( Square::ppuLoc_M4x4_ec_lds, 1, GL_TRUE, _projection );
-  glUniform4fv( Square::ppuLoc_kd, 1, _kd );
+  sendMatrices();
+  sendKD();
 
   glBindVertexArray( vao );
 
   glDrawArrays( GL_TRIANGLES, 0, NumVertices );
-
 
   glUseProgram( pgm );
 }
@@ -216,21 +169,3 @@ void Square::quad( int a, int b, int c, int d )
   normal.vComponents( normals[Index] ); memcpy( points[Index], vertices[c], sizeof( vec3 ) ); Index++;  
   normal.vComponents( normals[Index] ); memcpy( points[Index], vertices[d], sizeof( vec3 ) ); Index++;
 } /* end Square::quad() */
-
-void Square::getMatrices()
-{
-  // Get the Model_View matrix
-  wcToECMatrix( 
-	       _eye[0], _eye[1], _eye[2],
-	       _center[0], _center[1], _center[3],
-	       _up[0], _up[1], _up[2],
-	       _model_view );
-
-  // Get the Orthogonal projection matrix
-  orthogonal(
-	     _eyemin[0], _eyemax[0], // xmin/max in EC
-	     _eyemin[1], _eyemax[1], // ymin/max
-	     _eyemin[2], _eyemax[2], // zmin/max
-	     _projection
-	     );
-} /* end Square::getMatrices() */
