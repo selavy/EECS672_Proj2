@@ -36,8 +36,8 @@ Tree::Tree(double xbIn, double ybIn, double rTreeTopIn, double rTrunkIn, double 
 
 Tree::~Tree()
 {
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, vbo);
+	glDeleteVertexArrays(1, vao);
 	if (--Tree::numInstances == 0)
 	{
 		Tree::shaderIF->destroy();
@@ -81,10 +81,10 @@ void Tree::defineModel()
 	}
 
 	// send vertex data to GPU:
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	glGenBuffers(1, vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
 
 	glBufferData(GL_ARRAY_BUFFER, (numTrunkTriStripPoints + numTreeTopPoints)*sizeof(vec2),
 		points, GL_STATIC_DRAW);
@@ -133,7 +133,7 @@ void Tree::render()
 	computeScaleTrans(scaleTrans);
 	glUniform4fv(Tree::ppuLoc_scaleTrans, 1, scaleTrans);
 
-	glBindVertexArray(vao);
+	glBindVertexArray(vao[0]);
 	// draw trunk first because tree top overwrites it
 	glUniform1i(Tree::ppuLoc_treePart, 0); // '0' means trunk
 	int numTrunkTriStripPoints = 2 * numTrunkPoints;

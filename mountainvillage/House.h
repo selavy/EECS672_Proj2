@@ -32,8 +32,8 @@ public:
 	static void setHouseLabelFont(std::string font);
 private:
 	// structures to convey geometry to OpenGL/GLSL:
-	GLuint vao;
-	GLuint vbo; // Stores points for roof, house, and door
+	GLuint vao[1];
+	GLuint vbo[1]; // Stores points for roof, house, and door
 	// original defining data
 	double xb, yb, width, height, roofWidth, roofHeight;
 	// house label information

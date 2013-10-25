@@ -39,7 +39,7 @@ Mountain::Mountain(double xMinIn, double xMaxIn, double yMin, double sin_yMax, d
 Mountain::~Mountain()
 {
 	glDeleteBuffers(2, vbo);
-	glDeleteVertexArrays(1, &vao);
+	glDeleteVertexArrays(1, vao);
 	if (--Mountain::numInstances == 0)
 	{
 		Mountain::shaderIF->destroy();
@@ -85,8 +85,8 @@ void Mountain::defineModel()
 		x += dx;
 	}
 	// send vertex data to GPU:
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
 	glGenBuffers(2, vbo);
 	// 1. coordinate data
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
@@ -146,7 +146,7 @@ void Mountain::render()
 	computeScaleTrans(scaleTrans);
 	glUniform4fv(Mountain::ppuLoc_scaleTrans, 1, scaleTrans);
 
-	glBindVertexArray(vao);
+	glBindVertexArray(vao[0]);
 	// draw background mountain
 	glUniform1i(Mountain::ppuLoc_whichMountain, 0); // '0' means background
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*numSamplePoints);

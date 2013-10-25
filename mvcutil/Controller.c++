@@ -68,6 +68,10 @@ int Controller::createWindow(const std::string& windowTitle, int glutRCFlags) //
 			glClearFlags |= GL_DEPTH_BUFFER_BIT;
 	}
 	int windowID = glutCreateWindow(windowTitle.c_str());
+	if ((glutRCFlags & GLUT_DEPTH) != 0)
+		glEnable(GL_DEPTH_TEST);
+	else
+		glDisable(GL_DEPTH_TEST);
 	return windowID;
 }
 
@@ -111,8 +115,6 @@ void Controller::handleDisplay()
 {
 	// clear the frame buffer
 	glClear(glClearFlags);
-	if ((glClearFlags & GL_DEPTH_BUFFER_BIT) != 0)
-		glEnable(GL_DEPTH_TEST);
 
 	for (std::vector<ModelView*>::iterator it=models.begin() ; it<models.end() ; it++)
 		(*it)->render();

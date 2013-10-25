@@ -29,7 +29,7 @@ public:
 	void render();
 private:
 	// structures to convey geometry to OpenGL/GLSL:
-	GLuint vao;
+	GLuint vao[1];
 	GLuint vbo[2]; // [0] has coordinates; [1] has pv fraction up mountain
 	// original defining data
 	double xMin, xMax, cos_a, cos_b, cos_c, cos_d, sin_a, sin_b, sin_c, sin_d;

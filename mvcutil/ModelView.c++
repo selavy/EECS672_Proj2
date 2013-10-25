@@ -5,8 +5,6 @@
 #include "ModelView.h"
 #include "Controller.h"
 
-#define __DEBUG__
-
 ModelView::ModelView()
 {
 }
@@ -24,14 +22,12 @@ void ModelView::computeScaleTrans(float* scaleTransF) // CLASS METHOD
 	Controller* c = Controller::getCurrentController();
 	double xyzLimits[6];
 	c->getWCRegionOfInterest(xyzLimits);
-       
+
 	// preserve aspect ratio. Make "region of interest" wider or taller to
 	// match the Controller's viewport aspect ratio.
 	double vAR = c->getViewportAspectRatio();
 	double xmin = xyzLimits[0], xmax = xyzLimits[1];
 	double ymin = xyzLimits[2], ymax = xyzLimits[3];
-	double zmin = xyzLimits[4], zmax = xyzLimits[5];
-
 	if (vAR > 0.0)
 	{
 		double wHeight = xyzLimits[3] - xyzLimits[2];
@@ -58,11 +54,10 @@ void ModelView::computeScaleTrans(float* scaleTransF) // CLASS METHOD
 	// We are only concerned with the xy extents for now, hence we will
 	// ignore xyzLimits[4] and xyzLimits[5].
 	// Map the overall limits to the -1..+1 range expected by the OpenGL engine:
-	double scaleTrans[6];
+	double scaleTrans[4];
 	linearMap(xmin, xmax, -1.0, 1.0, scaleTrans[0], scaleTrans[1]);
 	linearMap(ymin, ymax, -1.0, 1.0, scaleTrans[2], scaleTrans[3]);
-	linearMap(zmin, zmax, -1.0, 1.0, scaleTrans[4], scaleTrans[5]);
-	for (int i=0 ; i<6 ; i++)
+	for (int i=0 ; i<4 ; i++)
 		scaleTransF[i] = static_cast<float>(scaleTrans[i]);
 }
 

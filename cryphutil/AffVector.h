@@ -106,7 +106,7 @@ public:
 	static const AffVector		zeroVector;
 
 	// While the instance variables are public, maximum benefit from the
-	// use of thois class is realized when the methods above are used.
+	// use of this class is realized when the methods above are used.
 	double	dx;
 	double	dy;
 	double	dz;

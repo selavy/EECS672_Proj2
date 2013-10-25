@@ -26,8 +26,8 @@ public:
 	void render();
 private:
 	// structures to convey geometry to OpenGL/GLSL:
-	GLuint vao;
-	GLuint vbo; // Stores both trunk and treetop points
+	GLuint vao[1];
+	GLuint vbo[1]; // Stores both trunk and treetop points
 	int numTrunkTriStripPoints;
 	// original defining data
 	double xb, yb, rTreeTop, rTrunk, height;

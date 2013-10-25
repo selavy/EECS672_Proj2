@@ -47,8 +47,8 @@ House::House(double xbIn, double ybIn, double widthIn, double heightIn,
 
 House::~House()
 {
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, vbo);
+	glDeleteVertexArrays(1, vao);
 	if (houseLabel != NULL)
 		delete houseLabel;
 	if (--House::numInstances == 0)
@@ -106,11 +106,11 @@ void House::defineModel()
 	points[10][1] = points[9][1];
 
 	// send data to GPU:
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
 
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glGenBuffers(1, vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
 	glBufferData(GL_ARRAY_BUFFER, 11*sizeof(vec2), points, GL_STATIC_DRAW);
 	glVertexAttribPointer(House::pvaLoc_wcPosition, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(House::pvaLoc_wcPosition);
@@ -153,7 +153,7 @@ void House::render()
 	computeScaleTrans(scaleTrans);
 	glUniform4fv(House::ppuLoc_scaleTrans, 1, scaleTrans);
 
-	glBindVertexArray(vao);
+	glBindVertexArray(vao[0]);
 	// draw roof
 	glUniform1i(House::ppuLoc_housePart, 0); // '0' means roof
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 3); // offset: 0
