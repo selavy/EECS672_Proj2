@@ -3,14 +3,10 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
-#define NumVertices 36
-#define NumCorners 8
-
 #include "NewModelView.h"
 
-typedef float mat4[16];
-typedef float vec3[3];
-typedef float vec4[4];
+#define NumVertices 36
+#define NumCorners 8
 
 class Square : public NewModelView
 {

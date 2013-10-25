@@ -5,6 +5,7 @@
 
 #include "Controller.h"
 #include "Square.h"
+#include "Piece.h"
 #include "ShaderIF.h"
 
 #define RED true
@@ -50,6 +51,11 @@ int main(int argc, char* argv[])
 	coords[2] = 7.9f;
 
 	c.addModel( new Square( color, coords, 0.3, 5.0 ) );
+
+	coords[0] = 0.0f;
+	coords[1] = 0.0f;
+	coords[2] = 0.0f;
+	c.addModel( new Piece( coords, 0.1, 0.5 ) );
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
 	// Off to the glut event handling loop:

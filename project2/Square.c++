@@ -76,14 +76,6 @@ Square::~Square()
 {
   glDeleteBuffers( 2, &vbo[0] );
   glDeleteVertexArrays( 1, &vao );
-
-  if( --numInstances == 0 )
-    {
-      Square::shaderIF->destroy();
-      delete Square::shaderIF;
-      Square::shaderIF = NULL;
-      Square::shaderProgram = 0;
-    }
 }
 
 void Square::fetchGLSLVariableLocations()
@@ -122,8 +114,6 @@ void Square::defineModel()
   quad( 4, 5, 6, 7 );
   quad( 5, 4, 0, 1 );
 
-  char buff[256];
-
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );
 
@@ -133,28 +123,15 @@ void Square::defineModel()
   glVertexAttribPointer( Square::pvaLoc_wcPosition, 3, GL_FLOAT, GL_FALSE, 0, 0 );
   glEnableVertexAttribArray( Square::pvaLoc_wcPosition );
 
-  sprintf(buff, "defineModel(): position" );
-  Controller * a = Controller::getCurrentController();
-  a->checkForErrors( std::cout, buff );
-
   glBindBuffer( GL_ARRAY_BUFFER, vbo[1] );
-  sprintf(buff, "glBindBuffer" );
-  a->checkForErrors( std::cout, buff );
   glBufferData( GL_ARRAY_BUFFER, sizeof( normals ), normals, GL_STATIC_DRAW );
-  sprintf(buff, "glBufferData" );
-  a->checkForErrors( std::cout, buff );
   glEnableVertexAttribArray( Square::pvaLoc_wcNormal );
-  sprintf(buff, "glEnableVertexAttribArray" );
-  a->checkForErrors( std::cout, buff );
   glVertexAttribPointer( Square::pvaLoc_wcNormal, 3, GL_FLOAT, GL_TRUE, 0, 0 );
-  sprintf(buff, "glVertexAttribPointer");
-  a->checkForErrors( std::cout, buff );
-
 } /* end Square::defineModel() */
 
 void Square::quad( int a, int b, int c, int d )
 {
-  // copied (with some modification) from Interactive Computer Graphics by E. Angel
+  // copied (with some modification) from Interactive Computer Graphics by E. Angel, p. 627
   cryph::AffVector u = cryph::AffVector( vertices[b] ) - cryph::AffVector( vertices[a] );
   cryph::AffVector v = cryph::AffVector( vertices[c] ) - cryph::AffVector( vertices[b] );
 
