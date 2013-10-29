@@ -11,11 +11,11 @@ GLint NewModelView::ppuLoc_M4x4_ec_lds = -1;
 GLint NewModelView::ppuLoc_kd = -1;
 GLint NewModelView::ppuLoc_lightModel = -1;
 
-vec3 NewModelView::_eye = { 0.0f, -1.0f, -1.0f };
-vec3 NewModelView::_center = { 0.0f, 0.0f, 0.0f };
+vec3 NewModelView::_eye = { 0.0f, -2.0f, 2.0f };
+vec3 NewModelView::_center = { 2.0f, 2.0f, 0.0f };
 vec3 NewModelView::_up = { 0.0f, 1.0f, 0.0f };
-vec3 NewModelView::_eyemin = { -1.0f, -1.0f, -1.0f };
-vec3 NewModelView::_eyemax = { 1.0f, 1.0f, 1.0f };
+vec3 NewModelView::_eyemin = { -1.0f, -0.5f, -1.0f };
+vec3 NewModelView::_eyemax = { 1.0f, 0.5f, 1.0f };
 vec3 NewModelView::_light = { 0.0f, 0.0f, 1.0f };
 
 NewModelView::NewModelView() {
