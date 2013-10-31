@@ -1,92 +1,151 @@
 // Square.c++
 
 #include "Square.h"
-#include "ShaderIF.h"
-#include "AffVector.h"
-#include "MatrixIF.h"
-#include <cstring>
-#include <cstdio>
-#include "Controller.h"
 
-#define NumVertices 36
+#include <iostream>
+using namespace std;
 
-GLint Square::pvaLoc_wcPosition = -1;
-GLint Square::pvaLoc_wcNormal = -1;
+#define RGB(x) ( (x) / 255.0 )
 
-Square::Square( bool color, vec3 corner, float width, float thickness )
+Square::Square( 
+	       int color,
+	       vec3 corner,           //!> location of bottom left corner of square
+	       float width,           //!> width of square
+	       float thickness        //!> thickness of square
+		)
   :
-  Index( 0 )
+_color( color )
 {
-  if( Square::pvaLoc_wcPosition == -1 )
-    fetchGLSLVariableLocations();
+  _vertices = new vec3[SQ_CORNERS];
 
-  vec3 tmpvertices[8] = {
+  /*
+  vec3 tmp[SQ_CORNERS] = {
     { corner[0], corner[1], corner[2] },
     { corner[0], corner[1] + thickness, corner[2] },
     { corner[0] + width, corner[1] + thickness, corner[2] },
     { corner[0] + width, corner[1], corner[2] },
-    { corner[0], corner[1], corner[2] - width },
-    { corner[0], corner[1] + thickness, corner[2] - width },
-    { corner[0] + width, corner[1] + thickness, corner[2] - width },
-    { corner[0] + width, corner[1], corner[2] - width }
+    { corner[0], corner[1], corner[2] + width },
+    { corner[0], corner[1] + thickness, corner[2] + width },
+    { corner[0] + width, corner[1] + thickness, corner[2] + width },
+    { corner[0] + width, corner[1], corner[2] + width }
   };
-
-  limits[0] = corner[0]; limits[1] = corner[0] + width;
-  limits[2] = corner[1]; limits[3] = corner[1] + thickness;
-  limits[4] = corner[2] - thickness; limits[5] = corner[2];
-
-  for( int i = 0; i < 6; ++i )
-    {
-      if( i & 1 )
-	limits[i] += 0.5;
-      else
-	limits[i] -= 0.5;
-    }
-
-  /*
-  for ( short i = 0; i < 3; ++i )
-    {
-      Square::_eyemin[i] = static_cast<float>( limits[i*2] ) - Square::_eye[i] - 2;
-      Square::_eyemax[i] = static_cast<float>( limits[i*2+1] ) - Square::_eye[i] + 2;
-    }
   */
 
- for( short i = 0; i < 8; ++i )
-   memcpy( vertices[i], tmpvertices[i], sizeof( vec3 ) );
+  /* 
+  float wmin = -1.0 * ( width / 2.0f );
+  float wmax = -1.0f * wmin;
+  float hmin = -1.0f * ( thickness / 2.0f );
+  float hmax = -1.0f * hmin;
+  */
+ 
+  /*
+  vec3 tmp[SQ_CORNERS] = {
+    { -0.5,         -0.5,             -0.5 },
+    { -0.5,         -0.5 + thickness, -0.5 },
+    { -0.5 + width, -0.5 + thickness, -0.5 },
+    { -0.5 + width, -0.5,             -0.5 },
+    { -0.5,         -0.5,             -0.5 + width },
+    { -0.5,         -0.5 + thickness, -0.5 + width },
+    { -0.5 + width, -0.5 + thickness, -0.5 + width },
+    { -0.5 + width, -0.5,             -0.5 + width }
+  };
+  */
 
- if( color )
-   {
-     _kd[0] = 1.0f;
-     _kd[1] = 0.0f;
-     _kd[2] = 0.0f;
-     _kd[3] = 1.0f;
-   }
- else
-   {
-     _kd[0] = 0.0941f;
-     _kd[1] = 0.0941f;
-     _kd[2] = 0.0941f;
-     _kd[3] = 1.0f;
-   }
+  /*
+  vec3 tmp[SQ_CORNERS] = {
+    { wmin, hmin, wmin },
+    { wmin, hmax, wmin },
+    { wmax, hmax, wmin },
+    { wmax, hmin, wmin },
+    { wmin, hmin, wmax },
+    { wmin, hmax, wmax },
+    { wmax, hmax, wmax },
+    { wmax, hmin, wmax }
+  };
+  */
+
+  _points = new vec3[ SQ_VERTICES ];
+  _normals = new vec3[ SQ_VERTICES ];
+
+  float xmin = corner[0];
+  float xmax = corner[0] + width;
+  float ymin = corner[1];
+  float ymax = corner[1] + thickness;
+  float zmin = corner[2];
+  float zmax = corner[2] + width;
+
+  _limits[0] = xmin;
+  _limits[1] = xmax;
+  _limits[2] = ymin;
+  _limits[3] = ymax;
+  _limits[4] = zmin;
+  _limits[5] = zmax;
+
+  vec3 tmp[SQ_CORNERS] = {
+    { xmin, ymin, zmin },
+    { xmin, ymax, zmin },
+    { xmax, ymax, zmin },
+    { xmax, ymin, zmin },
+    { xmin, ymin, zmax },
+    { xmin, ymax, zmax },
+    { xmax, ymax, zmax },
+    { xmax, ymin, zmax }
+  };
+
+  memcpy( _vertices, tmp, SQ_CORNERS * sizeof( vec3 ) );
 
   defineModel();
-}
+} /* end Square::Square() */
 
 Square::~Square()
 {
   glDeleteBuffers( 2, &vbo[0] );
   glDeleteVertexArrays( 1, &vao );
-}
 
-void Square::fetchGLSLVariableLocations()
+  delete [] _points;
+  delete [] _normals;
+  delete [] _vertices;
+} /* end Square::~Square */
+
+// xyzLimits: {wcXmin, wcXmax, wcYmin, wcYmax, wcZmin, wcZmax}
+void Square::getWCBoundingBox(double* xyzLimits) const
 {
-  if( Square::shaderProgram > 0 )
-    {
-      Square::pvaLoc_wcPosition = pvAttribLocation( shaderProgram, "wcPosition" );
-      Square::pvaLoc_wcNormal = pvAttribLocation( shaderProgram, "wcNormal" );
-      
-    }
-}
+  memcpy( xyzLimits, _limits, 6 * sizeof( double ) );
+} /* end Square::getWCBoundingBox() */
+
+void Square::defineModel()
+{
+  int index = 0;
+
+  /*
+  quad( _V(1), _V(0), _V(3), _V(2), index );
+  quad( _V(2), _V(3), _V(7), _V(6), index );
+  quad( _V(3), _V(0), _V(4), _V(7), index );
+  quad( _V(6), _V(5), _V(1), _V(2), index );
+  quad( _V(4), _V(5), _V(6), _V(7), index );
+  quad( _V(5), _V(4), _V(0), _V(1), index );
+  */
+  quad( 1, 0, 3, 2, index );
+  quad( 3, 0, 4, 7, index );
+  quad( 2, 3, 7, 6, index );
+  quad( 5, 4, 0, 1, index );
+  quad( 6, 5, 1, 2, index );
+  quad( 4, 5, 6, 7, index );
+
+  glGenVertexArrays( 1, &vao );
+  glBindVertexArray( vao );
+  
+  glGenBuffers( 2, &vbo[0] );
+  glBindBuffer( GL_ARRAY_BUFFER, vbo[0] );
+  glBufferData( GL_ARRAY_BUFFER, sizeof( vec3 ) * SQ_VERTICES, _points, GL_STATIC_DRAW );
+  glVertexAttribPointer( Square::pvaLoc_wcPosition, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+  glEnableVertexAttribArray( Square::pvaLoc_wcPosition );
+
+  glBindBuffer( GL_ARRAY_BUFFER, vbo[1] );
+  glBufferData( GL_ARRAY_BUFFER, sizeof( vec3 ) * SQ_VERTICES, _normals, GL_STATIC_DRAW );
+  glVertexAttribPointer( Square::pvaLoc_wcNormal, 3, GL_FLOAT, GL_TRUE, 0, 0 );
+  glEnableVertexAttribArray( Square::pvaLoc_wcNormal );
+} /* end Square::defineModel() */
 
 void Square::render()
 {
@@ -94,55 +153,47 @@ void Square::render()
   glGetIntegerv( GL_CURRENT_PROGRAM, &pgm );
   
   glUseProgram( shaderProgram );
+  
+  getMatrices( _limits );
 
-  sendMatrices();
-  sendKD();
+  vec4 color;
+  color[3] = 1.0f;
+
+  if( _color == 1 )
+    {
+      color[0] = RGB( 245.0f );
+      color[1] = RGB( 255.0f );
+      color[2] = RGB( 250.0f );
+    }
+  else if( _color == 0 )
+    {
+      color[0] = RGB( 100 );
+      color[1] = RGB( 69 );
+      color[2] = RGB( 19 );
+    }
+  else if( _color == 2 )
+    {
+      color[0] = RGB( 139.0f );
+      color[1] = RGB( 69.0f );
+      color[2] = RGB( 19.0f );
+    }
+  else if( _color == 3 )
+    {
+      color[0] = 1.0f;
+      color[1] = 0.0f;
+      color[2] = 0.0f;
+    }
+  else
+    {
+      color[0] = 0.0f;
+      color[1] = 0.0f;
+      color[2] = 1.0f;
+    }
+
+  sendLightSource( color );
 
   glBindVertexArray( vao );
-
-  glDrawArrays( GL_TRIANGLES, 0, NumVertices );
+  glDrawArrays( GL_TRIANGLES, 0, SQ_VERTICES );
 
   glUseProgram( pgm );
-}
-
-void Square::defineModel()
-{
-  quad( 1, 0, 3, 2 );
-  quad( 2, 3, 7, 6 );
-  quad( 3, 0, 4, 7 );
-  quad( 6, 5, 1, 2 );
-  quad( 4, 5, 6, 7 );
-  quad( 5, 4, 0, 1 );
-
-  glGenVertexArrays( 1, &vao );
-  glBindVertexArray( vao );
-
-  glGenBuffers( 2, &vbo[0] );
-  glBindBuffer( GL_ARRAY_BUFFER, vbo[0] );
-  glBufferData( GL_ARRAY_BUFFER, sizeof( points ), points, GL_STATIC_DRAW );
-  glVertexAttribPointer( Square::pvaLoc_wcPosition, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-  glEnableVertexAttribArray( Square::pvaLoc_wcPosition );
-
-  glBindBuffer( GL_ARRAY_BUFFER, vbo[1] );
-  glBufferData( GL_ARRAY_BUFFER, sizeof( normals ), normals, GL_STATIC_DRAW );
-  glEnableVertexAttribArray( Square::pvaLoc_wcNormal );
-  glVertexAttribPointer( Square::pvaLoc_wcNormal, 3, GL_FLOAT, GL_TRUE, 0, 0 );
-} /* end Square::defineModel() */
-
-void Square::quad( int a, int b, int c, int d )
-{
-  // copied (with some modification) from Interactive Computer Graphics by E. Angel, p. 627
-  cryph::AffVector u = cryph::AffVector( vertices[b] ) - cryph::AffVector( vertices[a] );
-  cryph::AffVector v = cryph::AffVector( vertices[c] ) - cryph::AffVector( vertices[b] );
-
-  cryph::AffVector normal = cryph::AffVector::cross( u, v );
-  normal.normalize();
-
-  /* normals[Index] - normal;           points[Index] = vertices[..];                         Index++ */
-  normal.vComponents( normals[Index] ); memcpy( points[Index], vertices[a], sizeof( vec3 ) ); Index++;
-  normal.vComponents( normals[Index] ); memcpy( points[Index], vertices[b], sizeof( vec3 ) ); Index++;
-  normal.vComponents( normals[Index] ); memcpy( points[Index], vertices[c], sizeof( vec3 ) ); Index++;
-  normal.vComponents( normals[Index] ); memcpy( points[Index], vertices[a], sizeof( vec3 ) ); Index++;
-  normal.vComponents( normals[Index] ); memcpy( points[Index], vertices[c], sizeof( vec3 ) ); Index++;  
-  normal.vComponents( normals[Index] ); memcpy( points[Index], vertices[d], sizeof( vec3 ) ); Index++;
-} /* end Square::quad() */
+} /* end Square::render() */

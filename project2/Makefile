@@ -6,7 +6,7 @@ LINK = g++ -fPIC -g
 LOCAL_UTIL_LIBRARIES = -L../lib -lcryph -lfont -lglsl -lmvc
 OGL_LIBRARIES = -lglut -lGLU -lGL
 
-OBJS = project2.o Square.o MatrixIF.o NewModelView.o Piece.o
+OBJS = project2.o MatrixIF.o GeneralMV.o Square.o Board.o Pawn.o King.o
 
 all: project2
 	./project2
@@ -28,21 +28,20 @@ project2: $(OBJS) ../lib/libcryph.so ../lib/libfont.so ../lib/libglsl.so ../lib/
 
 project2.o: project2.c++
 	$(CPP) $(C_FLAGS) project2.c++
-
-TEMPLATE_Subclass.o: TEMPLATE_Subclass.h TEMPLATE_Subclass.c++
-	$(CPP) $(C_FLAGS) TEMPLATE_Subclass.c++
-
+GeneralMV.o: GeneralMV.h GeneralMV.c++
+	$(CPP) $(C_FLAGS) GeneralMV.c++
 MatrixIF.o: MatrixIF.h MatrixIF.c++
 	$(CPP) $(C_FLAGS) MatrixIF.c++
-
-Square.o: MatrixIF.o Square.h Square.c++
+Square.o: Square.h Square.c++
 	$(CPP) $(C_FLAGS) Square.c++
-
-NewModelView.o: NewModelView.h NewModelView.c++
-	$(CPP) $(C_FLAGS) NewModelView.c++
-
-Piece.o: Piece.h Piece.c++
-	$(CPP) $(C_FLAGS) Piece.c++
+Board.o: Board.h Board.c++
+	$(CPP) $(C_FLAGS) Board.c++
+Pawn.o: Pawn.h Pawn.c++
+	$(CPP) $(C_FLAGS) Pawn.c++
+King.o: King.h King.c++
+	$(CPP) $(C_FLAGS) King.c++
 
 clean:
-	rm -rf *.o *~ project2
+	rm -f *~ *.o project2
+
+

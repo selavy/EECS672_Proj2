@@ -1,22 +1,20 @@
-// Square.h
+// King.h
 
-#ifndef SQUARE_H
-#define SQUARE_H
+#ifndef KING_H
+#define KING_H
 
 #include "GeneralMV.h"
 
-
-#define SQ_VERTICES 36
-#define SQ_CORNERS 8
-#define SQ_FACES 6
+#define KING_VERTICES 216
+#define KING_CORNERS 48
 
 #define _V( x ) _vertices[ (x) ]
 
-class Square : public GeneralMV
+class King : public GeneralMV
 {
 public:
-  Square( int color, vec3 corner, float width, float thickness );
-	virtual ~Square();
+  King( int color, vec3 corner );
+	virtual ~King();
 
 	// xyzLimits: {wcXmin, wcXmax, wcYmin, wcYmax, wcZmin, wcZmax}
 	void getWCBoundingBox(double* xyzLimitsF) const;
@@ -28,6 +26,7 @@ private:
 	GLuint vbo[2]; //!> 0: coordinate data, 1: normals
 	
 	double _limits[6];
+
 	int _color;
 
 };
